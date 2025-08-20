@@ -1,5 +1,5 @@
-import { Body, Controller, Post } from "@nestjs/common";
-import { suggestionService } from "./suggestion.service";
+import { Body, Controller, Post } from '@nestjs/common';
+import { suggestionService } from './suggestion.service';
 
 @Controller('suggestion')
 export class SuggestionController {
@@ -8,16 +8,19 @@ export class SuggestionController {
   @Post('next')
   getNextSuggestion(
     @Body()
-      body:{
-        failedCount: number;
+    body: {
+      failedCount: number;
       difficulty: 'easy' | 'medium' | 'hard';
       category: string;
       doneQuestions: string[];
-      solvedCategoryStats: { easy: number; medium: number; hard: number };
-      },
-  ){
-     return {
-       nextQuestion: this.suggestionService.suggestNextQuestion(body),
-     };
+      solvedStats: { easy: number; medium: number; hard: number }; // Changed from solvedCategoryStats
+    },
+  ) {
+    return {
+      nextQuestion: this.suggestionService.suggestNextQuestion({
+        ...body,
+        solvedCategoryStats: body.solvedStats, // Map solvedStats to solvedCategoryStats
+      }),
+    };
   }
 }
